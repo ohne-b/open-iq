@@ -1,14 +1,32 @@
-# Form 1.0 implementation
+# Implementation
 
 The original planning documents are research and design proposals. This file records the delivered software and deliberate decisions that supersede those proposals.
 
-## Product
+## Current form: ICAR-16
+
+Open IQ 2.0 starts new attempts on `icar16-1.0`: four questions each in verbal reasoning, letter series, matrix reasoning and three-dimensional rotation. The public-domain Appendix A sample items replace the custom ten-section form for new attempts. All questions are untimed, with instructions but no additional practice items. Submitted answers are final, skips receive zero, and answer review opens only after completion.
+
+The overall and section estimates are descriptive standard scores in a documented cohort of 3,480 adult complete records from the published SAPA ICAR dataset. Their mean-100, SD-15 convention does not make them population IQ or establish age adjustment. Four-item section estimates are coarse. The exact selection, formula, provenance and interpretation limits are in [ICAR.md](ICAR.md); that document supersedes earlier launch-scoring proposals.
+
+`src/content/icar.ts` defines the fixed questions and geometry. `IcarStimulus.tsx` redraws matrices and marked cubes as SVG. Known cube faces and marking orientations are checked under all 24 proper rotations, with exactly the published answer matching. Layout changes, refreshed symbols and responsive presentation are not independently validated as equivalent to the source administration.
+
+`sectionsFor` and `choiceBankFor` choose content by the saved form version. Current and original item IDs are distinct. Reports recompute raw scores, and only current-form records can use `icar-scoring.ts`. Complete reference distributions are frozen as aggregate JSON. A separate Node script reproduces them from the checksum-pinned CC0 source file; ordinary builds have no dependency on that download.
+
+Browser tests complete the current form, save and resume it, inspect partial and full results, verify mobile/desktop layouts and print rendering, and retain original-form regression coverage. Unit checks cover the source keys, cube rotations, reference moments and ties, missing/unfinished observations, version boundaries and malformed records. This verifies software behavior, not population validity.
+
+The architecture, privacy model, supplied branding, minimal home page, export/deletion controls and GitHub Pages deployment remain as described below. There is no visitor response collection. Existing ten-section records can still be resumed and reported with their original content and scoring.
+
+## Original form 1.0 (saved attempts only)
+
+The remaining sections document the original form and its retained implementation. New attempts no longer use this item bank.
+
+### Product
 
 One assessment, ten sections, 106 choice items, 22 memory trials and four timed rounds. Every section has separate practice. Users can save, leave, resume, inspect partial results, download their response record, delete individual records, and print a report.
 
 The home screen is a centered title and start action, with saved attempts where relevant. It has one About link and no introductory marketing copy or feature strip. DM Sans, an off-white ground and a single dark green action color replace the larger editorial direction. The owner-supplied SVG logo is used unchanged in the header, favicon and README; interface icons use `@mdi/react` and named paths from `@mdi/js`. The earlier design proposal is historical planning material and is not the site's current visual specification.
 
-## Architecture
+### Architecture
 
 React, TypeScript, Vite, Tailwind, React Router and npm. A single application with small independent modules is sufficient; there is no monorepo, plugin system, state-machine library or server. Native radios, buttons, fieldsets, details and dialogs provide the controls.
 
@@ -16,7 +34,7 @@ Scoring, content and state transitions have no React dependency. Zod validates s
 
 IndexedDB stores complete response records by random attempt ID. Writes are serialized. Records persist until explicitly deleted or removed by the browser; there is no automatic expiry. Browser locks protect an active assessment across tabs. Storage failure is visible and allows an in-memory attempt with manual export. Unsupported form versions are rejected. There is no file import interface. Exports are not signed and are not tamper-proof.
 
-## Administration
+### Administration
 
 There is no overall timer. Choice sections are forward-only and use a confirmation before skipping. They reveal no scored-item feedback during the assessment. The answer review is available only after completion.
 
@@ -26,17 +44,17 @@ Speed rounds use `performance.now()` deadlines, a 100 ms deadline check, and res
 
 Native browser timing is used instead of adding jsPsych for a small fixed set of task procedures. These are second-scale presentations, not millisecond-equivalent laboratory timing. Browser suspension, rendering latency, hardware differences and touch-versus-keyboard differences remain limitations. Small interruptions below the detection thresholds can go undetected. Interrupted responses kept in memory are recorded when the visibility handler runs; a hard reload may preserve only the interrupted marker, not the unfinished block's individual responses.
 
-## Graphics and items
+### Graphics and items
 
 SVG is rendered directly from typed geometry. Cube objects are checked under all 24 proper rotations; distractors are not rotational equivalents, and each displayed cube has a visible face center. Paper-hole keys are computed by reverse reflection through the actual folds. Matrix options are structurally distinct. These checks do not establish that every item is perceptually unambiguous or well calibrated.
 
 Content was authored with AI assistance. There has been no independent editorial, cultural-fairness or psychometric review. The fixed form and public answer keys make practice effects and coaching unavoidable. Claims of high-stakes security, diagnostic validity, population accuracy or extreme-IQ measurement would be unsupported.
 
-## Results
+### Results
 
 Raw correct totals for choice sections; positional recall and exact sequences for memory; separate symmetry totals; correct/error counts in complete timed rounds. No overall score, invented norms, percentile, confidence band, clinical labels or fabricated reliability estimate. The reference population and sampling plan in the research documents remain future work requiring actual evidence.
 
-## Accessibility and checks
+### Accessibility and checks
 
 Semantic controls, focus indication, direct keyboard equivalents, reduced-motion handling, responsive layouts and print styles are implemented. Visual reasoning items are not equivalent for nonvisual use; this is explained on the accessibility page. No blanket accessibility-conformance or device-equivalence claim is made.
 
@@ -44,6 +62,6 @@ Vitest checks bank completeness, practice separation, geometry, answer keys, sta
 
 The optional WebMCP tool exposes only the currently visible results. It cannot start, answer, submit, delete or modify an assessment. Its registration/validation/cleanup contract is unit-tested with a registry stub. A live WebMCP browser integration has not been verified; unsupported browsers simply omit the tool.
 
-## Deployment
+### Deployment
 
 Static GitHub Pages build with a repository-aware base path, hash routes and no 404 workaround. Runtime fonts and graphics are self-hosted. Actions are pinned to commit SHAs. Main-branch checks precede deployment; pull requests cannot publish. No participant data endpoint, telemetry, research opt-in, password system or secrets are required.

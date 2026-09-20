@@ -14,7 +14,7 @@
   <a href="https://ohne-b.github.io/open-iq/">Take the assessment</a>
 </p>
 
-**Status: working assessment, form 1.0. Unvalidated and unnormed.** The site includes ten sections, practice, local progress, task-level results, JSON export and print reports. It does not produce IQ scores, percentiles or clinical interpretations.
+**Current form: ICAR-16, with four sections and study-reference results.** The site uses published public-domain questions, redrawn SVG diagrams, local progress, section and overall estimates, JSON export and print reports. Scores use a documented cohort of 3,480 adult volunteers; they are not age-adjusted population IQ scores. This adapted presentation has not been independently validated. See [the method and sources](docs/ICAR.md).
 
 ## Develop
 
@@ -40,10 +40,10 @@ npm run preview
 
 ## What ships
 
-- Six choice sections: 106 original items covering matrices, words, rotation, number sequences, analogies and folding.
-- Two memory sections: 12 sequence-reordering trials and 10 spatial complex-span trials.
-- Two speed sections: two 90-second comparison rounds and two 60-second search rounds.
-- Separate practice before each section. Fixed form and order, forward-only responses, no answer feedback during scored tasks.
+- The public ICAR Sample Test: four questions each in verbal reasoning, letter series, matrix reasoning and three-dimensional rotation.
+- Overall and section scores on a 100/15 study-reference scale, empirical study percentiles and raw totals. Partial attempts receive estimates only for finished sections.
+- Fixed form and order, untimed questions, forward-only responses and no answer feedback during scored tasks.
+- Existing ten-section attempts retain their original questions, memory/speed procedures and raw reports; they are never given ICAR-based scores.
 - Local IndexedDB storage; resume, partial reports, downloadable records and explicit deletion. A browser lock prevents simultaneous administration of one attempt in two tabs.
 - Responsive, keyboard-operable controls; editable SVG diagrams generated from typed geometry. The supplied Open IQ logo and Material Design Icons are self-hosted.
 - A single static site with no accounts, answer submission, tracking, runtime API or external fonts.
@@ -56,23 +56,29 @@ src/
   domain.ts               Form metadata and validated record schemas
   session.ts              State transitions, recovery and record validation
   scoring.ts              Pure task scoring; no population conversions
+  icar-scoring.ts         Study-reference standard scores and percentiles
   storage.ts              IndexedDB persistence and JSON downloads
   report-tool.ts          Optional, read-only WebMCP report access
   content/
-    verbal.ts             Original verbal and numerical items
-    visual.ts             Matrix, cube and folding geometry and keys
-    index.ts              Fixed memory and speed stimuli
+    icar.ts               Public-domain items, keys and typed SVG parameters
+    icar-reference.json   Aggregate human reference distributions and provenance
+    verbal.ts             Original-form verbal and numerical items
+    visual.ts             Original-form matrix, cube and folding geometry
+    index.ts              Versioned banks and original memory/speed stimuli
   components/
     Assessment.tsx        Instructions, practice, sections and breaks
     ChoiceQuestion.tsx    Choice and skip controls
     MemoryTask.tsx         Digit recall and spatial complex span
     SpeedTask.tsx          Deadline-based speed rounds
     Stimulus.tsx           SVG and geometry renderers
-    Results.tsx            Task report, export and print
+    IcarStimulus.tsx       ICAR matrix and marked-cube SVGs
+    Results.tsx            Versioned task report, export and print
+    IcarResults.tsx        Overall and section study-reference report
     InfoPages.tsx          Methods, privacy and accessibility
   styles.css              Shared interface and print styles
   *.test.ts               Content, transitions, scoring and record checks
 tests/                    Browser regression flows
+scripts/                  Reproducible reference-data calculation
 public/brand/             Supplied logo, also used as the favicon
 public/licenses/          Font and icon license notices
 .github/workflows/        Checks and GitHub Pages deployment
@@ -80,6 +86,8 @@ docs/                     Research, original plan and release decisions
 ```
 
 Keep scoring and content independent of React. Update `FORM_VERSION` when changing scored items, answer keys, instructions that alter the task, timing, or scoring. Old response files must not silently acquire a new interpretation. See [contribution notes](CONTRIBUTING.md) and [implementation decisions](docs/IMPLEMENTATION.md).
+
+`npm run reference:check` downloads the pinned CC0 source file into an ignored cache, verifies its checksum, recomputes the adult cohort aggregates and compares them with the committed reference. No participant rows are shipped. Builds use the committed aggregate JSON and need no research-data download.
 
 ## GitHub Pages
 
@@ -89,7 +97,7 @@ Hash routes work on Pages without a custom 404 redirect. Every runtime asset use
 
 ## Start here
 
-The research below informed the implementation. These documents preserve the original, broader plan; [implementation decisions](docs/IMPLEMENTATION.md) describe what the shipped code actually does.
+Start with [ICAR content and scoring](docs/ICAR.md) and [implementation decisions](docs/IMPLEMENTATION.md) for the shipped site. The documents below preserve the original, broader plan and its research; their ten-section proposals do not describe the current ICAR form.
 
 | Document | What it settles |
 | --- | --- |
@@ -110,10 +118,10 @@ The research below informed the implementation. These documents preserve the ori
 - No assumed budget for participant recruitment or professional psychometric collaborators.
 - Editable vector graphics and a deliberately designed interface; no generated bitmap puzzle art.
 
-The plan distinguishes **correctly scoring a task** from **validly interpreting that score as IQ**. Under the present resource constraints, the first complete release reports task performance. It must not claim population IQ accuracy that has not been established.
+The project distinguishes **correctly scoring a task** from **validly interpreting that score as IQ**. The current reference permits a descriptive comparison with a specific research cohort; it does not establish population IQ accuracy or international norms.
 
 ## License and limits
 
-Application code is licensed under [Apache-2.0](LICENSE). Original item content and documentation are [CC BY 4.0](CONTENT-LICENSE); see [NOTICE](NOTICE) for scope and attribution. DM Sans retains its SIL Open Font License. The earlier proposed mark and editorial art direction are not used by the site.
+Application code is licensed under [Apache-2.0](LICENSE). ICAR source items are public domain and the reference dataset is CC0. Original Open IQ content and documentation are [CC BY 4.0](CONTENT-LICENSE); see [NOTICE](NOTICE) for scope and attribution. DM Sans retains its SIL Open Font License. The supplied logo remains unchanged.
 
-This form was authored with AI assistance and has not received an independent psychometric or editorial review. Automated checks establish software properties, not item validity or fairness. It is not WAIS and includes no commercial test content or norm tables. Do not use these scores for diagnosis, selection, credentials, or high-stakes decisions.
+This adaptation was implemented with AI assistance and has not received independent psychometric validation. Automated checks establish software properties, not equivalent difficulty or fairness. It is not WAIS and includes no commercial test content or norm tables. Do not use these scores for diagnosis, selection, credentials, or high-stakes decisions.
