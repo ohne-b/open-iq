@@ -4,11 +4,26 @@ Copyright 2026 Open IQ contributors
 Application source code, configuration, tests and rendering/generation algorithms:
 Apache License 2.0; see LICENSE.
 
-Original question wording, response options, fixed stimulus parameters, answer
+Original Open IQ question wording, response options, fixed stimulus parameters, answer
 explanations and project documentation: Creative Commons Attribution 4.0
 International, to the extent copyright applies; see CONTENT-LICENSE.
 Attribution: Open IQ contributors, https://github.com/ohne-b/open-iq
 Indicate modifications. No endorsement or measurement validity is implied.
+
+ICAR Sample Test questions, answer options, keys and source diagrams:
+Public domain, David M. Condon and William Revelle (2014).
+https://www.icar-project.org/
+https://doi.org/10.1016/j.intell.2014.01.004
+Source: Appendix A of the publisher's public supplementary material.
+Open IQ redraws those diagrams in SVG and adds explanations and presentation.
+The above CC BY license does not restrict the underlying public-domain items.
+
+ICAR/SAPA human response data: CC0 1.0, Harvard Dataverse,
+https://doi.org/10.7910/DVN/AD9RVY, dataset version 3.0, file 10991957.
+src/content/icar-reference.json contains derived aggregates, not participant rows.
+Provenance, checksum, cohort selection and scoring: docs/ICAR.md.
+These are study-reference scores, not population IQ norms. No endorsement
+by the ICAR authors or dataset hosts is implied.
 
 DM Sans: Copyright 2014 The DM Sans Project Authors.
 SIL Open Font License 1.1, reproduced in public/licenses/DM-Sans-OFL.txt.
