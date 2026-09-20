@@ -1,4 +1,6 @@
 import { useEffect } from 'react';
+import { Icon } from '@mdi/react';
+import { mdiPlus, mdiChevronDown } from '@mdi/js';
 import { Link } from 'react-router-dom';
 import { sections, type Session } from '../domain';
 import { itemById } from '../content';
@@ -92,7 +94,7 @@ export function Results({ session, onDelete }: { session: Session; onDelete: () 
                 )}
               </span>
               <span className="details-mark" aria-hidden="true">
-                +
+                <Icon path={mdiPlus} className="ui-icon" aria-hidden="true" />
               </span>
             </summary>
             <div className="score-detail">
@@ -167,7 +169,10 @@ export function Results({ session, onDelete }: { session: Session; onDelete: () 
       </p>
       {session.stage === 'complete' && (
         <details className="answer-review no-print">
-          <summary>Review answers</summary>
+          <summary>
+            Review answers
+            <Icon path={mdiChevronDown} className="ui-icon disclosure-icon" aria-hidden="true" />
+          </summary>
           <p className="small muted">
             Reviewing answers will make future attempts less informative. Memory and timed tasks are
             summarized above.
@@ -176,7 +181,14 @@ export function Results({ session, onDelete }: { session: Session; onDelete: () 
             .filter((s) => s.kind === 'choice')
             .map((section) => (
               <details key={section.id}>
-                <summary>{section.name}</summary>
+                <summary>
+                  {section.name}
+                  <Icon
+                    path={mdiChevronDown}
+                    className="ui-icon disclosure-icon"
+                    aria-hidden="true"
+                  />
+                </summary>
                 <ol className="review-list">
                   {session.responses
                     .filter((r) => r.section === section.id)

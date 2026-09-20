@@ -1,10 +1,20 @@
-# Open IQ
+<p align="center">
+  <img src="public/brand/open-iq.svg" width="128" alt="Open IQ logo">
+</p>
 
-One substantial, open cognitive assessment for international English-speaking adults.
+<h1 align="center">Open IQ</h1>
+
+<p align="center">An open-source cognitive assessment.</p>
+
+<p align="center">
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-Apache_2.0-345a48" alt="License: Apache 2.0"></a>
+</p>
+
+<p align="center">
+  <a href="https://ohne-b.github.io/open-iq/">Take the assessment</a>
+</p>
 
 **Status: working assessment, form 1.0. Unvalidated and unnormed.** The site includes ten sections, practice, local progress, task-level results, JSON import/export and print reports. It does not produce IQ scores, percentiles or clinical interpretations.
-
-[Take the assessment](https://ohne-b.github.io/open-iq/)
 
 ## Develop
 
@@ -35,7 +45,7 @@ npm run preview
 - Two speed sections: two 90-second comparison rounds and two 60-second search rounds.
 - Separate practice before each section. Fixed form and order, forward-only responses, no answer feedback during scored tasks.
 - Local IndexedDB storage; resume, partial reports, downloadable records, validated imports, and explicit deletion. A browser lock prevents simultaneous administration of one attempt in two tabs.
-- Responsive, keyboard-operable controls; editable SVG diagrams generated from typed geometry. No generated branding or bitmap test art.
+- Responsive, keyboard-operable controls; editable SVG diagrams generated from typed geometry. The supplied Open IQ logo and Material Design Icons are self-hosted.
 - A single static site with no accounts, answer submission, tracking, runtime API or external fonts.
 
 ## Repository map
@@ -63,7 +73,8 @@ src/
   styles.css              Shared interface and print styles
   *.test.ts               Content, transitions, scoring and import checks
 tests/                    Browser regression flows
-public/licenses/          Self-hosted font license
+public/brand/             Supplied logo, also used as the favicon
+public/licenses/          Font and icon license notices
 .github/workflows/        Checks and GitHub Pages deployment
 docs/                     Research, original plan and release decisions
 ```

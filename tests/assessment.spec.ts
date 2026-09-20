@@ -4,7 +4,7 @@ import { choiceBank, sequenceTrial, spanTrial } from '../src/content';
 
 async function start(page: Page) {
   await page.goto('./');
-  await page.getByRole('link', { name: 'Take the assessment' }).click();
+  await page.getByRole('link', { name: 'Start test' }).click();
   await page.getByLabel('I’m 18 or older').check();
   await page.getByRole('button', { name: 'Begin assessment' }).click();
   await expect(page.getByRole('heading', { name: 'Matrix reasoning', exact: true })).toBeVisible();
@@ -50,6 +50,31 @@ async function importSession(page: Page, session: Session) {
   await expect(page.getByRole('heading', { name: 'Your results' })).toBeVisible();
 }
 
+test('home is centered, uses the supplied logo and has one About link', async ({
+  page,
+}, testInfo) => {
+  await page.goto('./');
+  await expect(page.getByRole('link', { name: 'Start test', exact: true })).toBeVisible();
+  await expect(page.getByRole('link', { name: 'About the test', exact: true })).toHaveCount(1);
+  const logo = page.locator('.site-name img');
+  await expect(logo).toHaveAttribute('src', '/open-iq/brand/open-iq.svg');
+  await expect(logo).toHaveJSProperty('naturalWidth', 592);
+  const main = page.locator('main');
+  await expect(main).not.toContainText('Ten sections exploring');
+  await expect(main).not.toContainText('Free. No account.');
+  await expect(main).not.toContainText('Allow 60–75 minutes');
+  await expect(main).not.toContainText('Ages 18+');
+  await expect(main).not.toContainText('English');
+  await expect(main).not.toContainText('You’ll receive scores');
+  const bounds = await main.boundingBox();
+  const viewport = page.viewportSize()!;
+  expect(Math.abs(bounds!.x + bounds!.width / 2 - viewport.width / 2)).toBeLessThan(1);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(
+    viewport.width,
+  );
+  await page.screenshot({ path: testInfo.outputPath('home.png'), fullPage: true });
+});
+
 test('practice, answer, leave and reload preserve progress', async ({ page }) => {
   const errors: string[] = [];
   page.on('pageerror', (error) => errors.push(error.message));
@@ -65,9 +90,9 @@ test('practice, answer, leave and reload preserve progress', async ({ page }) =>
   await page.getByRole('button', { name: 'Next', exact: true }).click();
   await expect(page.getByText('2 / 18', { exact: true })).toBeVisible();
   await page.getByRole('button', { name: 'Save & leave', exact: true }).click();
-  await expect(page.getByRole('link', { name: 'Continue assessment', exact: true })).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Continue test', exact: true })).toBeVisible();
   await page.reload();
-  await page.getByRole('link', { name: 'Continue assessment', exact: true }).click();
+  await page.getByRole('link', { name: 'Continue test', exact: true }).click();
   await expect(page.getByText('2 / 18', { exact: true })).toBeVisible();
   expect(errors).toEqual([]);
 });
@@ -99,7 +124,7 @@ test('export, delete and import restore the same result', async ({ page }) => {
   await expect(page.getByRole('heading', { name: 'Your results' })).toBeVisible();
   await page.getByRole('button', { name: 'Delete this result' }).click();
   await page.getByRole('button', { name: 'Delete assessment', exact: true }).click();
-  await expect(page.getByRole('link', { name: 'Take the assessment' })).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Start test' })).toBeVisible();
   await page.getByLabel('Import a saved assessment').setInputFiles((await download.path())!);
   await expect(page.getByRole('heading', { name: 'Your results' })).toBeVisible();
   await expect(page.getByText('10 of 10 sections completed')).toBeVisible();
@@ -113,7 +138,7 @@ test('malformed imports fail without creating an assessment', async ({ page }) =
     buffer: Buffer.from('{"stage":"complete","iq":140}'),
   });
   await expect(page.getByRole('alert')).toContainText('not a valid export');
-  await expect(page.getByRole('link', { name: 'Take the assessment' })).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Start test' })).toBeVisible();
 });
 
 test('the same assessment cannot be taken in two tabs', async ({ page, context }) => {

@@ -52,6 +52,9 @@ input {
   align-items: center;
 }
 .site-name {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
   font-size: 19px;
   font-weight: 550;
   letter-spacing: -0.6px;
@@ -66,12 +69,6 @@ input {
   color: #202724;
   text-decoration: underline;
   text-underline-offset: 4px;
-}
-.home-facts {
-  display: flex;
-}
-.home-facts span + span {
-  border-left: 1px solid #d9ddd8;
 }
 .button {
   border-radius: 6px;
@@ -94,16 +91,13 @@ input {
 .primary:hover {
   background: #244937;
 }
-.home-note {
-  font-size: 13px;
-}
 .site-footer {
   padding: 24px 36px;
   max-width: 1120px;
-  margin: auto;
+  margin: 0 auto;
   width: 100%;
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   color: #737a74;
   font-size: 13px;
 }
@@ -160,58 +154,49 @@ h2:focus {
 .site-name {
   letter-spacing: -0.55px;
 }
+.site-name img {
+  display: block;
+  flex-shrink: 0;
+}
+.ui-icon {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  vertical-align: -0.2em;
+}
+.site-footer a,
+.saved-list .text-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
 .site-shell > main {
   flex: 1;
 }
 .home-main {
-  margin-top: clamp(52px, 10vh, 112px);
-  margin-bottom: 80px;
-  width: min(100% - 48px, 650px);
+  width: min(100% - 48px, 480px);
+  margin: 0 auto;
+  padding: 64px 0 96px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 .home-main h1 {
-  font-size: clamp(34px, 5vw, 48px);
-  letter-spacing: -1.7px;
+  font-size: clamp(28px, 4vw, 36px);
+  letter-spacing: -1.1px;
+  text-align: center;
+  margin-bottom: 32px;
+}
+.home-actions {
+  justify-content: center;
 }
 .intro {
   max-width: 550px;
   font-size: 18px;
   line-height: 1.7;
   color: var(--muted);
-}
-.home-facts {
-  font-size: 14px;
-  color: var(--muted);
-  gap: 18px;
-  margin: 28px 0 32px;
-}
-.home-facts span + span {
-  padding-left: 18px;
-}
-.home-note {
-  color: var(--muted);
-  margin: 17px 0 0;
-}
-.home-context {
-  margin-top: 56px;
-  padding-top: 24px;
-  border-top: 1px solid var(--rule);
-  max-width: 550px;
-  color: var(--muted);
-  font-size: 14px;
-}
-.home-context p {
-  margin-bottom: 12px;
-  max-width: 490px;
-}
-.home-context a {
-  color: #345a48;
-  text-decoration: none;
-}
-.home-context a:hover {
-  text-decoration: underline;
-}
-.home-context a span {
-  margin-left: 6px;
 }
 .button {
   line-height: 1.4;
@@ -286,7 +271,9 @@ h2:focus {
   text-align: center;
 }
 .back-link {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
   text-decoration: none;
   color: var(--muted);
   font-size: 14px;
@@ -359,7 +346,7 @@ form > .button {
   margin-top: 10px;
 }
 .saved-section {
-  max-width: 550px;
+  width: 100%;
   margin-top: 40px;
 }
 .saved-section h2 {
@@ -391,15 +378,16 @@ form > .button {
   text-decoration: underline;
 }
 .import-control {
-  margin-top: 30px;
+  margin-top: 16px;
+  text-align: center;
 }
 .file-link {
   display: inline-block;
   cursor: pointer;
   position: relative;
-  font-size: 13px;
+  font-size: 14px;
   color: var(--muted);
-  padding: 6px 0;
+  padding: 10px 0;
 }
 .file-link input {
   position: absolute;
@@ -594,6 +582,10 @@ form > .button {
   width: 16px;
   color: #345a48;
   font-size: 15px;
+}
+.option-check .ui-icon {
+  width: 16px;
+  height: 16px;
 }
 .visual-options .option {
   height: 126px;
@@ -1052,6 +1044,22 @@ details[open] > summary .details-mark {
   padding: 10px 0;
   font-size: 14px;
 }
+summary {
+  list-style: none;
+}
+.answer-review summary,
+.prose > details > summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+.disclosure-icon {
+  color: var(--muted);
+}
+details[open] > summary .disclosure-icon {
+  transform: rotate(180deg);
+}
 .answer-review > details {
   padding: 2px 0;
   border-bottom: 1px solid var(--rule);
@@ -1101,7 +1109,6 @@ details[open] > summary .details-mark {
 .prose > details > summary {
   cursor: pointer;
   padding: 17px 0;
-  list-style-position: inside;
 }
 .prose > details > p {
   margin: 0 0 20px;
@@ -1175,18 +1182,7 @@ dialog .actions {
     padding: 22px 24px;
   }
   .home-main {
-    margin-top: 52px;
-  }
-  .home-facts {
-    gap: 12px;
-    font-size: 12px;
-    flex-wrap: wrap;
-  }
-  .home-facts span + span {
-    padding-left: 12px;
-  }
-  .home-context {
-    margin-top: 42px;
+    padding: 48px 0 72px;
   }
   .page {
     margin-top: 28px;
@@ -1197,7 +1193,7 @@ dialog .actions {
   }
   .site-footer nav {
     gap: 10px 18px;
-    justify-content: flex-end;
+    justify-content: center;
   }
   .assessment {
     margin-top: 0;

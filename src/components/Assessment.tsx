@@ -1,4 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
+import { Icon } from '@mdi/react';
+import { mdiCheck } from '@mdi/js';
 import { Link, useNavigate } from 'react-router-dom';
 import { sections, flagSession, type Response, type Session } from '../domain';
 import { choiceBank, practiceBank, sequenceTrial, spanTrial } from '../content';
@@ -46,7 +48,7 @@ function MemoryPractice({
       <p>
         {section === 'sequence'
           ? expected.join('  ·  ')
-          : expected.map((n) => `row ${Math.floor(n / 4) + 1}, column ${(n % 4) + 1}`).join(' → ')}
+          : expected.map((n) => `row ${Math.floor(n / 4) + 1}, column ${(n % 4) + 1}`).join('; ')}
       </p>
       <p className="muted">
         {section === 'sequence'
@@ -336,7 +338,7 @@ export function Assessment({
       {session.stage === 'break' && (
         <div className="task-ready">
           <span className="completion-check" aria-hidden="true">
-            ✓
+            <Icon path={mdiCheck} size={1.4} aria-hidden="true" />
           </span>
           <h2>
             {session.sectionIndex === 9 ? 'You’ve finished the assessment.' : 'Section complete.'}

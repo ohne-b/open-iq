@@ -1,11 +1,14 @@
 import { Link } from 'react-router-dom';
+import { Icon } from '@mdi/react';
+import { mdiArrowLeft, mdiChevronDown, mdiOpenInNew } from '@mdi/js';
 import { sections } from '../domain';
 
 export function About() {
   return (
     <main className="page prose">
       <Link className="back-link" to="/">
-        ← Back
+        <Icon path={mdiArrowLeft} className="ui-icon" aria-hidden="true" />
+        Back
       </Link>
       <h1>About the test</h1>
       <p className="intro">
@@ -54,14 +57,20 @@ export function About() {
       </p>
       <h2>How scores are calculated</h2>
       <details>
-        <summary>Reasoning, language and spatial questions</summary>
+        <summary>
+          Reasoning, language and spatial questions
+          <Icon path={mdiChevronDown} className="ui-icon disclosure-icon" aria-hidden="true" />
+        </summary>
         <p>
           One point for each correct answer. Skipped questions are listed separately. There is no
           penalty for an incorrect choice, no time bonus, and no combined score across sections.
         </p>
       </details>
       <details>
-        <summary>Memory</summary>
+        <summary>
+          Memory
+          <Icon path={mdiChevronDown} className="ui-icon disclosure-icon" aria-hidden="true" />
+        </summary>
         <p>
           Each digit or location in the correct position counts as one point. Exact sequences are
           also counted. Symmetry decisions in spatial memory are reported separately. Interrupted
@@ -69,7 +78,10 @@ export function About() {
         </p>
       </details>
       <details>
-        <summary>Visual speed</summary>
+        <summary>
+          Visual speed
+          <Icon path={mdiChevronDown} className="ui-icon disclosure-icon" aria-hidden="true" />
+        </summary>
         <p>
           Correct and incorrect responses are counted in each completed round. Symbol comparison has
           two 90-second rounds; visual search has two 60-second rounds. Responses after the deadline
@@ -77,7 +89,10 @@ export function About() {
         </p>
       </details>
       <details>
-        <summary>Interruptions and repeat attempts</summary>
+        <summary>
+          Interruptions and repeat attempts
+          <Icon path={mdiChevronDown} className="ui-icon disclosure-icon" aria-hidden="true" />
+        </summary>
         <p>
           Leaving this tab or a substantial timing delay ends an active memory sequence or speed
           round. A reload cannot replay that task. Untimed questions can be resumed. Breaks are
@@ -115,7 +130,9 @@ export function About() {
       </p>
       <div className="page-bottom">
         <Link to="/">Back to assessment</Link>
-        <a href="https://github.com/ohne-b/open-iq">View source ↗</a>
+        <a href="https://github.com/ohne-b/open-iq">
+          View source <Icon path={mdiOpenInNew} className="ui-icon" aria-hidden="true" />
+        </a>
       </div>
     </main>
   );
@@ -125,7 +142,8 @@ export function Privacy() {
   return (
     <main className="page prose">
       <Link className="back-link" to="/">
-        ← Back
+        <Icon path={mdiArrowLeft} className="ui-icon" aria-hidden="true" />
+        Back
       </Link>
       <h1>Your data stays here.</h1>
       <p className="intro">No account. No analytics. No answers sent to a server.</p>
@@ -176,7 +194,8 @@ export function Accessibility() {
   return (
     <main className="page prose">
       <Link className="back-link" to="/">
-        ← Back
+        <Icon path={mdiArrowLeft} className="ui-icon" aria-hidden="true" />
+        Back
       </Link>
       <h1>Accessibility</h1>
       <p className="intro">Clear controls, keyboard navigation, and room to take your time.</p>

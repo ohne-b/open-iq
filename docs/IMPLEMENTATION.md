@@ -6,7 +6,7 @@ The original planning documents are research and design proposals. This file rec
 
 One assessment, ten sections, 106 choice items, 22 memory trials and four timed rounds. Every section has separate practice. Users can save, leave, resume, inspect partial results, download/import their response record, delete individual records, and print a report.
 
-The home screen is a compact start screen, not a promotional site. DM Sans, an off-white ground and a single dark green action color replace the larger editorial direction. No logo or mark is generated. The earlier design proposal is historical planning material and is not the site's current visual specification.
+The home screen is a centered title and start action, with import and saved attempts where relevant. It has one About link and no introductory marketing copy or feature strip. DM Sans, an off-white ground and a single dark green action color replace the larger editorial direction. The owner-supplied SVG logo is used unchanged in the header, favicon and README; interface icons use `@mdi/react` and named paths from `@mdi/js`. The earlier design proposal is historical planning material and is not the site's current visual specification.
 
 ## Architecture
 

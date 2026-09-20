@@ -2,6 +2,8 @@
 
 Use Node 24, run `npm ci`, then `npm run dev`. Keep changes focused and run `npm run lint`, `npm test`, `npm run test:e2e`, and `npm run build` before proposing changes. Format with `npm run format`.
 
+Use Conventional Commits for every new commit: `type(scope): description`, for example `fix(ui): center the start screen` or `docs: update setup instructions`.
+
 ## Content
 
 Write original items; do not copy or paraphrase proprietary assessment questions, diagrams, administration scripts, norms or scoring tables. Record the intended rule, correct answer and a useful explanation. Distractors must be distinct, plausible, and definitely incorrect under that rule. Have another person review ambiguity and English usage before claiming editorial review.
@@ -12,7 +14,7 @@ The form is fixed. Every scored-content or scoring change requires a form-versio
 
 ## Interface and privacy
 
-Keep the assessment as the primary activity. Use semantic native controls, visible focus, readable contrast, and simple words. Branding is intentionally limited to the project name until the owner supplies a logo. Do not add decorative badges, generated imagery, tracking, user accounts or network response collection.
+Keep the assessment as the primary activity. Use semantic native controls, visible focus, readable contrast, and simple words. Use the supplied SVG logo in `public/brand/open-iq.svg` and `@mdi/react` with named imports from `@mdi/js` for interface icons. Keep the home screen to its title and actions, with one About link. Do not add marketing descriptions, feature strips, decorative badges, generated imagery, tracking, user accounts or network response collection.
 
 Never include personal response exports in public issues or test fixtures. Synthetic fixtures should identify the state or behavior they test. Local exports are editable records, not verified credentials.
 

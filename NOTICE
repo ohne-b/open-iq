@@ -14,6 +14,15 @@ DM Sans: Copyright 2014 The DM Sans Project Authors.
 SIL Open Font License 1.1, reproduced in public/licenses/DM-Sans-OFL.txt.
 Font source: https://github.com/googlefonts/dm-fonts
 
+Material Design Icons (@mdi/js): Pictogrammers Free License; icons under
+Apache 2.0 or their upstream licenses, and distribution code under MIT.
+React icon renderer (@mdi/react): MIT License.
+Project: https://pictogrammers.com/library/mdi/
+Notices reproduced in public/licenses/MDI.txt and MDI-React-MIT.txt.
+
+The project logo was supplied by the repository owner. The source SVG is
+preserved unchanged at public/brand/open-iq.svg.
+
 Third-party npm packages retain their own licenses and notices, distributed with
 those packages. The lockfile records their exact versions.
 

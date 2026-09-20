@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import { Icon } from '@mdi/react';
+import { mdiCheck } from '@mdi/js';
 import type { ChoiceItem, Response, SectionId } from '../domain';
 import { ItemStimulus, OptionStimulus } from './Stimulus';
 
@@ -63,7 +65,7 @@ export function ChoiceQuestion({
             </span>
             <OptionStimulus item={item} index={i} />
             <span className="option-check" aria-hidden="true">
-              {selected === i ? '✓' : ''}
+              {selected === i && <Icon path={mdiCheck} className="ui-icon" aria-hidden="true" />}
             </span>
           </label>
         ))}

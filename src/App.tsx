@@ -1,11 +1,20 @@
 import { Component, useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
 import { Link, Route, Routes, useLocation, useNavigate, useParams } from 'react-router-dom';
+import { Icon } from '@mdi/react';
+import { mdiArrowLeft, mdiArrowRight, mdiGithub } from '@mdi/js';
 import { createSession, flagSession, type Session } from './domain';
 import { interruptSession, parseSession } from './session';
 import { deleteSession, downloadSession, loadSessions, saveSession } from './storage';
 import { Assessment, type UpdateSession } from './components/Assessment';
 import { Results } from './components/Results';
 import { About, Accessibility, Privacy } from './components/InfoPages';
+
+const brand = (
+  <>
+    <img src={`${import.meta.env.BASE_URL}brand/open-iq.svg`} alt="" width="36" height="36" />
+    <span>Open IQ</span>
+  </>
+);
 
 function Home({
   sessions,
@@ -20,32 +29,16 @@ function Home({
   return (
     <main className="home-main" id="main-content" tabIndex={-1}>
       <h1 tabIndex={-1}>Cognitive assessment</h1>
-      <p className="intro">Ten sections exploring reasoning, language, memory and visual speed.</p>
-      <div className="home-facts">
-        <span>Allow 60–75 minutes</span>
-        <span>Ages 18+</span>
-        <span>English</span>
-      </div>
-      <div className="actions">
+      <div className="actions home-actions">
         <Link className="button primary" to={pending ? `/test/${pending.id}` : '/prepare'}>
-          {pending ? 'Continue assessment' : 'Take the assessment'}
-          <span aria-hidden="true">→</span>
+          {pending ? 'Continue test' : 'Start test'}
+          <Icon path={mdiArrowRight} className="ui-icon" aria-hidden="true" />
         </Link>
         {pending && (
           <Link className="quiet-button" to="/prepare">
             Start again
           </Link>
         )}
-      </div>
-      <p className="home-note">Free. No account. Progress saved on this device.</p>
-      <div className="home-context">
-        <p>
-          You’ll receive scores for each task. This assessment is not yet validated and does not
-          produce an IQ score.
-        </p>
-        <Link to="/about">
-          About the test <span aria-hidden="true">↗</span>
-        </Link>
       </div>
       {sessions.length > 0 && (
         <section className="saved-section">
@@ -73,8 +66,8 @@ function Home({
                     session.stage === 'complete' ? `/results/${session.id}` : `/test/${session.id}`
                   }
                 >
-                  {session.stage === 'complete' ? 'View results' : 'Continue'}{' '}
-                  <span aria-hidden="true">→</span>
+                  {session.stage === 'complete' ? 'View results' : 'Continue'}
+                  <Icon path={mdiArrowRight} className="ui-icon" aria-hidden="true" />
                 </Link>
               </li>
             ))}
@@ -132,7 +125,8 @@ function Prepare({
   return (
     <main className="page narrow" id="main-content" tabIndex={-1}>
       <Link className="back-link" to="/">
-        ← Back
+        <Icon path={mdiArrowLeft} className="ui-icon" aria-hidden="true" />
+        Back
       </Link>
       <h1 tabIndex={-1}>Before you begin</h1>
       <p className="intro">Find a quiet place and give yourself some time.</p>
@@ -432,10 +426,10 @@ export function App() {
       </a>
       <header className="site-header">
         {inTest ? (
-          <span className="site-name">Open IQ</span>
+          <span className="site-name">{brand}</span>
         ) : (
           <Link to="/" className="site-name">
-            Open IQ
+            {brand}
           </Link>
         )}
         {!inTest && (
@@ -519,11 +513,13 @@ export function App() {
       )}
       {!inTest && (
         <footer className="site-footer">
-          <span>Open IQ</span>
           <nav aria-label="Footer">
             <Link to="/privacy">Privacy</Link>
             <Link to="/accessibility">Accessibility</Link>
-            <a href="https://github.com/ohne-b/open-iq">Source ↗</a>
+            <a href="https://github.com/ohne-b/open-iq">
+              <Icon path={mdiGithub} className="ui-icon" aria-hidden="true" />
+              Source
+            </a>
           </nav>
         </footer>
       )}
