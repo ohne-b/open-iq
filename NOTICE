@@ -1,0 +1,21 @@
+Open IQ
+Copyright 2026 Open IQ contributors
+
+Application source code, configuration, tests and rendering/generation algorithms:
+Apache License 2.0; see LICENSE.
+
+Original question wording, response options, fixed stimulus parameters, answer
+explanations and project documentation: Creative Commons Attribution 4.0
+International, to the extent copyright applies; see CONTENT-LICENSE.
+Attribution: Open IQ contributors, https://github.com/ohne-b/open-iq
+Indicate modifications. No endorsement or measurement validity is implied.
+
+DM Sans: Copyright 2014 The DM Sans Project Authors.
+SIL Open Font License 1.1, reproduced in public/licenses/DM-Sans-OFL.txt.
+Font source: https://github.com/googlefonts/dm-fonts
+
+Third-party npm packages retain their own licenses and notices, distributed with
+those packages. The lockfile records their exact versions.
+
+Open IQ is an independent project. No affiliation with or endorsement by Pearson,
+the WAIS publishers, or the Open-Source Psychometrics Project is claimed.
