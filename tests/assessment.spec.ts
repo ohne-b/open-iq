@@ -95,8 +95,16 @@ test('practice, answer, leave and reload preserve progress', async ({ page }) =>
   const errors: string[] = [];
   page.on('pageerror', (error) => errors.push(error.message));
   await start(page);
+  await expect(page.locator('.section-intro')).not.toContainText('Practice comes first.');
   await page.getByRole('button', { name: 'Try a practice' }).click();
   await page.getByRole('radio', { name: 'Option C', exact: true }).check();
+  const selected = page.locator('.option.selected');
+  await expect(selected).toHaveCSS('outline-style', 'none');
+  await page.keyboard.press('Tab');
+  await page.keyboard.press('Shift+Tab');
+  await expect(page.getByRole('radio', { name: 'Option C', exact: true })).toBeFocused();
+  await expect(selected).toHaveCSS('outline-width', '3px');
+  await expect(selected).toHaveCSS('outline-offset', '-3px');
   await page.getByRole('button', { name: 'Check answer' }).click();
   await expect(page.getByText('That’s right.')).toBeVisible();
   await page.getByRole('button', { name: 'Continue', exact: true }).click();

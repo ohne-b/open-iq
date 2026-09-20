@@ -532,9 +532,9 @@ form > .button {
   box-shadow: inset 0 0 0 1px #345a48;
   background: #eff4ed;
 }
-.option:focus-within {
-  outline: 2px solid #345a48;
-  outline-offset: 4px;
+.option:has(input:focus-visible) {
+  outline: 3px solid #345a48;
+  outline-offset: -3px;
 }
 .option input {
   position: absolute;

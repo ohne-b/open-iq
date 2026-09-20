@@ -223,12 +223,6 @@ export function Assessment({
               <li key={instruction}>{instruction}</li>
             ))}
           </ol>
-          <p className="small muted">
-            {section.kind === 'speed'
-              ? '2 timed rounds'
-              : `${section.count} ${section.kind === 'choice' ? 'questions' : 'sequences'}`}
-            . Practice comes first.
-          </p>
           <button className="button primary" onClick={() => void stage('practice')}>
             Try a practice
           </button>
