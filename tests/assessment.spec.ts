@@ -40,13 +40,28 @@ function atSection(index: number): Session {
   return session;
 }
 
-async function importSession(page: Page, session: Session) {
+async function seedSession(page: Page, session: Session) {
   await page.goto('./');
-  await page.getByLabel('Import a saved assessment').setInputFiles({
-    name: 'assessment.json',
-    mimeType: 'application/json',
-    buffer: Buffer.from(JSON.stringify(session)),
-  });
+  await expect(page.getByRole('link', { name: 'Start test', exact: true })).toBeVisible();
+  await page.evaluate(async (record) => {
+    const db = await new Promise<IDBDatabase>((resolve, reject) => {
+      const request = indexedDB.open('open-iq', 1);
+      request.onsuccess = () => resolve(request.result);
+      request.onerror = () => reject(request.error);
+    });
+    try {
+      await new Promise<void>((resolve, reject) => {
+        const transaction = db.transaction('sessions', 'readwrite');
+        transaction.objectStore('sessions').put(record);
+        transaction.oncomplete = () => resolve();
+        transaction.onerror = () => reject(transaction.error);
+      });
+    } finally {
+      db.close();
+    }
+  }, session);
+  await page.reload();
+  await page.goto(`./#/results/${session.id}`);
   await expect(page.getByRole('heading', { name: 'Your results' })).toBeVisible();
 }
 
@@ -66,6 +81,7 @@ test('home is centered, uses the supplied logo and has one About link', async ({
   await expect(main).not.toContainText('Ages 18+');
   await expect(main).not.toContainText('English');
   await expect(main).not.toContainText('You’ll receive scores');
+  await expect(page.getByLabel('Import a saved assessment')).toHaveCount(0);
   const bounds = await main.boundingBox();
   const viewport = page.viewportSize()!;
   expect(Math.abs(bounds!.x + bounds!.width / 2 - viewport.width / 2)).toBeLessThan(1);
@@ -99,7 +115,7 @@ test('practice, answer, leave and reload preserve progress', async ({ page }) =>
 
 test('a reload cannot replay an active memory sequence', async ({ page }) => {
   const session = atSection(2);
-  await importSession(page, session);
+  await seedSession(page, session);
   await page.getByRole('link', { name: 'Continue test' }).click();
   await page.getByRole('button', { name: 'Show sequence' }).click();
   await expect(page.locator('.memory-digit')).toBeVisible();
@@ -109,10 +125,10 @@ test('a reload cannot replay an active memory sequence', async ({ page }) => {
   await expect(page.getByRole('button', { name: 'Show sequence' })).toBeVisible();
 });
 
-test('export, delete and import restore the same result', async ({ page }) => {
+test('exports results and confirms deletion before removing saved data', async ({ page }) => {
   const session = atSection(10);
   session.stage = 'complete';
-  await importSession(page, session);
+  await seedSession(page, session);
   await expect(page.getByText('10 of 10 sections completed')).toBeVisible();
   const downloadPromise = page.waitForEvent('download');
   await page.getByRole('button', { name: 'Download data' }).click();
@@ -125,20 +141,9 @@ test('export, delete and import restore the same result', async ({ page }) => {
   await page.getByRole('button', { name: 'Delete this result' }).click();
   await page.getByRole('button', { name: 'Delete assessment', exact: true }).click();
   await expect(page.getByRole('link', { name: 'Start test' })).toBeVisible();
-  await page.getByLabel('Import a saved assessment').setInputFiles((await download.path())!);
-  await expect(page.getByRole('heading', { name: 'Your results' })).toBeVisible();
-  await expect(page.getByText('10 of 10 sections completed')).toBeVisible();
-});
-
-test('malformed imports fail without creating an assessment', async ({ page }) => {
-  await page.goto('./');
-  await page.getByLabel('Import a saved assessment').setInputFiles({
-    name: 'bad.json',
-    mimeType: 'application/json',
-    buffer: Buffer.from('{"stage":"complete","iq":140}'),
-  });
-  await expect(page.getByRole('alert')).toContainText('not a valid export');
+  await page.reload();
   await expect(page.getByRole('link', { name: 'Start test' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Saved assessments' })).toHaveCount(0);
 });
 
 test('the same assessment cannot be taken in two tabs', async ({ page, context }) => {
@@ -153,7 +158,7 @@ test('the last speed section finishes both rounds and opens the complete report'
   page,
 }) => {
   const session = atSection(9);
-  await importSession(page, session);
+  await seedSession(page, session);
   await page.getByRole('link', { name: 'Continue test' }).click();
   await page.clock.install();
   for (let round = 0; round < 2; round++) {

@@ -3,7 +3,7 @@ import { Link, Route, Routes, useLocation, useNavigate, useParams } from 'react-
 import { Icon } from '@mdi/react';
 import { mdiArrowLeft, mdiArrowRight, mdiGithub } from '@mdi/js';
 import { createSession, flagSession, type Session } from './domain';
-import { interruptSession, parseSession } from './session';
+import { interruptSession } from './session';
 import { deleteSession, downloadSession, loadSessions, saveSession } from './storage';
 import { Assessment, type UpdateSession } from './components/Assessment';
 import { Results } from './components/Results';
@@ -16,16 +16,8 @@ const brand = (
   </>
 );
 
-function Home({
-  sessions,
-  onImport,
-}: {
-  sessions: Session[];
-  onImport: (file: File) => Promise<void>;
-}) {
+function Home({ sessions }: { sessions: Session[] }) {
   const pending = sessions.find((s) => s.stage !== 'complete');
-  const [importing, setImporting] = useState(false);
-  const [error, setError] = useState('');
   return (
     <main className="home-main" id="main-content" tabIndex={-1}>
       <h1 tabIndex={-1}>Cognitive assessment</h1>
@@ -74,37 +66,6 @@ function Home({
           </ul>
         </section>
       )}
-      <div className="import-control">
-        <label className="file-link">
-          {importing ? 'Importing…' : 'Import a saved assessment'}
-          <input
-            type="file"
-            accept="application/json,.json"
-            disabled={importing}
-            onChange={async (event) => {
-              const file = event.target.files?.[0];
-              if (!file) return;
-              setImporting(true);
-              setError('');
-              try {
-                await onImport(file);
-              } catch (cause) {
-                setError(
-                  cause instanceof Error ? cause.message : 'This file could not be imported.',
-                );
-              } finally {
-                setImporting(false);
-                event.target.value = '';
-              }
-            }}
-          />
-        </label>
-        {error && (
-          <p className="form-error" role="alert">
-            {error}
-          </p>
-        )}
-      </div>
     </main>
   );
 }
@@ -218,8 +179,8 @@ function SessionRoute({
     <main className="page narrow">
       <h1>Assessment not found</h1>
       <p>
-        It may have been deleted, or saved in a different browser. You can import a downloaded
-        assessment from the home page.
+        It may have been deleted, or saved in a different browser. Saved assessments are available
+        only in the browser where you took them.
       </p>
       <Link to="/" className="button primary">
         Go home
@@ -359,26 +320,6 @@ export function App() {
     await persist(session);
     navigate(`/test/${session.id}`);
   };
-  const importFile = async (file: File) => {
-    if (file.size > 1_000_000)
-      throw new Error('This file is too large. Choose an Open IQ JSON export under 1 MB.');
-    let session: Session;
-    try {
-      session = parseSession(JSON.parse(await file.text()));
-    } catch {
-      throw new Error(
-        'This is not a valid export for form 1.0. Choose the original JSON file from Open IQ.',
-      );
-    }
-    if (current.current.some((s) => s.id === session.id))
-      throw new Error(
-        'This assessment is already saved on this device. Open it from the list above.',
-      );
-    session = flagSession(interruptSession(session), 'resumed');
-    publish([session, ...current.current]);
-    await persist(session);
-    navigate(`/results/${session.id}`);
-  };
   const leave = async (session: Session) => {
     await update(session.id, (s) => flagSession(interruptSession(s), 'resumed'));
     navigate('/');
@@ -460,7 +401,7 @@ export function App() {
         </main>
       ) : (
         <Routes>
-          <Route path="/" element={<Home sessions={sessions} onImport={importFile} />} />
+          <Route path="/" element={<Home sessions={sessions} />} />
           <Route
             path="/prepare"
             element={<Prepare hasPrevious={sessions.length > 0} onBegin={begin} />}

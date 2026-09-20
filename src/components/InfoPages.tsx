@@ -170,9 +170,8 @@ export function Privacy() {
       </p>
       <h2>Exporting and deleting</h2>
       <p>
-        Use “Download data” on a result to save a JSON file. You can import it from the home page in
-        another browser running the same form version. Exported files contain your responses and
-        timings; share them only if you intend to.
+        Use “Download data” on a result to save a JSON file for your own records. Exported files
+        contain your responses and timings; share them only if you intend to.
       </p>
       <p>
         Each saved result has a delete option. Clearing this site’s storage in browser settings

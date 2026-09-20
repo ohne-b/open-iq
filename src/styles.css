@@ -377,34 +377,6 @@ form > .button {
 .saved-list li > div a:hover {
   text-decoration: underline;
 }
-.import-control {
-  margin-top: 16px;
-  text-align: center;
-}
-.file-link {
-  display: inline-block;
-  cursor: pointer;
-  position: relative;
-  font-size: 14px;
-  color: var(--muted);
-  padding: 10px 0;
-}
-.file-link input {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  inset: 0;
-  opacity: 0;
-  cursor: pointer;
-}
-.file-link:focus-within {
-  outline: 2px solid #345a48;
-  outline-offset: 5px;
-}
-.file-link:hover {
-  text-decoration: underline;
-  text-underline-offset: 4px;
-}
 .form-error {
   margin: 14px 0 0;
   color: #8e342b;

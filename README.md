@@ -14,7 +14,7 @@
   <a href="https://ohne-b.github.io/open-iq/">Take the assessment</a>
 </p>
 
-**Status: working assessment, form 1.0. Unvalidated and unnormed.** The site includes ten sections, practice, local progress, task-level results, JSON import/export and print reports. It does not produce IQ scores, percentiles or clinical interpretations.
+**Status: working assessment, form 1.0. Unvalidated and unnormed.** The site includes ten sections, practice, local progress, task-level results, JSON export and print reports. It does not produce IQ scores, percentiles or clinical interpretations.
 
 ## Develop
 
@@ -44,7 +44,7 @@ npm run preview
 - Two memory sections: 12 sequence-reordering trials and 10 spatial complex-span trials.
 - Two speed sections: two 90-second comparison rounds and two 60-second search rounds.
 - Separate practice before each section. Fixed form and order, forward-only responses, no answer feedback during scored tasks.
-- Local IndexedDB storage; resume, partial reports, downloadable records, validated imports, and explicit deletion. A browser lock prevents simultaneous administration of one attempt in two tabs.
+- Local IndexedDB storage; resume, partial reports, downloadable records and explicit deletion. A browser lock prevents simultaneous administration of one attempt in two tabs.
 - Responsive, keyboard-operable controls; editable SVG diagrams generated from typed geometry. The supplied Open IQ logo and Material Design Icons are self-hosted.
 - A single static site with no accounts, answer submission, tracking, runtime API or external fonts.
 
@@ -54,7 +54,7 @@ npm run preview
 src/
   App.tsx                 Routes, local records, preparation and home
   domain.ts               Form metadata and validated record schemas
-  session.ts              State transitions, recovery and import validation
+  session.ts              State transitions, recovery and record validation
   scoring.ts              Pure task scoring; no population conversions
   storage.ts              IndexedDB persistence and JSON downloads
   report-tool.ts          Optional, read-only WebMCP report access
@@ -71,7 +71,7 @@ src/
     Results.tsx            Task report, export and print
     InfoPages.tsx          Methods, privacy and accessibility
   styles.css              Shared interface and print styles
-  *.test.ts               Content, transitions, scoring and import checks
+  *.test.ts               Content, transitions, scoring and record checks
 tests/                    Browser regression flows
 public/brand/             Supplied logo, also used as the favicon
 public/licenses/          Font and icon license notices

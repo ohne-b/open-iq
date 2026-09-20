@@ -4,17 +4,17 @@ The original planning documents are research and design proposals. This file rec
 
 ## Product
 
-One assessment, ten sections, 106 choice items, 22 memory trials and four timed rounds. Every section has separate practice. Users can save, leave, resume, inspect partial results, download/import their response record, delete individual records, and print a report.
+One assessment, ten sections, 106 choice items, 22 memory trials and four timed rounds. Every section has separate practice. Users can save, leave, resume, inspect partial results, download their response record, delete individual records, and print a report.
 
-The home screen is a centered title and start action, with import and saved attempts where relevant. It has one About link and no introductory marketing copy or feature strip. DM Sans, an off-white ground and a single dark green action color replace the larger editorial direction. The owner-supplied SVG logo is used unchanged in the header, favicon and README; interface icons use `@mdi/react` and named paths from `@mdi/js`. The earlier design proposal is historical planning material and is not the site's current visual specification.
+The home screen is a centered title and start action, with saved attempts where relevant. It has one About link and no introductory marketing copy or feature strip. DM Sans, an off-white ground and a single dark green action color replace the larger editorial direction. The owner-supplied SVG logo is used unchanged in the header, favicon and README; interface icons use `@mdi/react` and named paths from `@mdi/js`. The earlier design proposal is historical planning material and is not the site's current visual specification.
 
 ## Architecture
 
 React, TypeScript, Vite, Tailwind, React Router and npm. A single application with small independent modules is sufficient; there is no monorepo, plugin system, state-machine library or server. Native radios, buttons, fieldsets, details and dialogs provide the controls.
 
-Scoring, content and state transitions have no React dependency. Zod validates file structure; semantic validation also checks item identity/order, progress, duplicate responses, timing and completion. Scores are recomputed from responses rather than accepted from an export.
+Scoring, content and state transitions have no React dependency. Zod validates saved record structure; semantic validation also checks item identity/order, progress, duplicate responses, timing and completion. Scores are recomputed from responses rather than accepted from an export.
 
-IndexedDB stores complete response records by random attempt ID. Writes are serialized. Records persist until explicitly deleted or removed by the browser; there is no automatic expiry. Browser locks protect an active assessment across tabs. Storage failure is visible and allows an in-memory attempt with manual export. Files over 1 MB and unsupported form versions are rejected. Exports are not signed and are not tamper-proof.
+IndexedDB stores complete response records by random attempt ID. Writes are serialized. Records persist until explicitly deleted or removed by the browser; there is no automatic expiry. Browser locks protect an active assessment across tabs. Storage failure is visible and allows an in-memory attempt with manual export. Unsupported form versions are rejected. There is no file import interface. Exports are not signed and are not tamper-proof.
 
 ## Administration
 
@@ -40,7 +40,7 @@ Raw correct totals for choice sections; positional recall and exact sequences fo
 
 Semantic controls, focus indication, direct keyboard equivalents, reduced-motion handling, responsive layouts and print styles are implemented. Visual reasoning items are not equivalent for nonvisual use; this is explained on the accessibility page. No blanket accessibility-conformance or device-equivalence claim is made.
 
-Vitest checks bank completeness, practice separation, geometry, answer keys, state transitions, malformed imports, missingness, raw scoring, keyboard recall and timing deadlines. Playwright regression flows cover practice-to-assessment, saved progress, reload recovery, file import/export, deletion and cross-tab locks in desktop/mobile Chromium. These are functional software checks, not a clinical study or real-device timing calibration.
+Vitest checks bank completeness, practice separation, geometry, answer keys, state transitions, malformed records, missingness, raw scoring, keyboard recall and timing deadlines. Playwright regression flows cover practice-to-assessment, saved progress, reload recovery, data export, deletion and cross-tab locks in desktop/mobile Chromium. These are functional software checks, not a clinical study or real-device timing calibration.
 
 The optional WebMCP tool exposes only the currently visible results. It cannot start, answer, submit, delete or modify an assessment. Its registration/validation/cleanup contract is unit-tested with a registry stub. A live WebMCP browser integration has not been verified; unsupported browsers simply omit the tool.
 
