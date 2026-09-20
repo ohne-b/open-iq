@@ -1,4 +1,5 @@
-import type { ChoiceItem, Glyph, SectionId } from '../domain';
+import { FORM_VERSION, type Session, type ChoiceItem, type Glyph, type SectionId } from '../domain';
+import { icarBank } from './icar';
 import {
   wordItems,
   analogyItems,
@@ -35,10 +36,11 @@ export const practiceBank: Partial<Record<SectionId, ChoiceItem>> = {
   folding: foldingPractice,
 };
 export const itemById = new Map(
-  Object.values(choiceBank)
-    .flat()
-    .map((item) => [item.id, item]),
+  [...Object.values(choiceBank), ...Object.values(icarBank)].flat().map((item) => [item.id, item]),
 );
+
+export const choiceBankFor = (version: Session['version']) =>
+  version === FORM_VERSION ? icarBank : choiceBank;
 
 export function sequenceTrial(index: number, practice = false) {
   const length = practice ? 3 : 3 + Math.floor(index / 2);

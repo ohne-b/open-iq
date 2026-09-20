@@ -1,5 +1,6 @@
 import { useId } from 'react';
 import type { ChoiceItem, Glyph, Point2, Point3 } from '../domain';
+import { IcarStimulus, IcarOption } from './IcarStimulus';
 
 export function GlyphDrawing({ glyph }: { glyph: Glyph }) {
   const title = useId();
@@ -234,6 +235,8 @@ export function FoldSequence({ item }: { item: Extract<ChoiceItem, { kind: 'fold
 }
 
 export function ItemStimulus({ item }: { item: ChoiceItem }) {
+  if (item.kind === 'icar-matrix' || item.kind === 'icar-cube')
+    return <IcarStimulus id={item.id} />;
   if (item.kind === 'matrix')
     return (
       <div className="matrix-grid">
@@ -254,6 +257,8 @@ export function ItemStimulus({ item }: { item: ChoiceItem }) {
       </div>
     );
   if (item.kind === 'folding') return <FoldSequence item={item} />;
+  if (item.kind !== 'text') return null;
+  if (item.id.startsWith('VR.') || item.id.startsWith('LN.')) return null;
   if (item.sequence)
     return (
       <div
@@ -274,6 +279,8 @@ export function ItemStimulus({ item }: { item: ChoiceItem }) {
 }
 
 export function OptionStimulus({ item, index }: { item: ChoiceItem; index: number }) {
+  if (item.kind === 'icar-matrix' || item.kind === 'icar-cube')
+    return <IcarOption id={item.id} index={index} />;
   if (item.kind === 'matrix') return <GlyphDrawing glyph={item.choices[index]} />;
   if (item.kind === 'rotation') return <CubeDrawing points={item.choices[index]} />;
   if (item.kind === 'folding') return <PaperDrawing holes={item.choices[index]} />;

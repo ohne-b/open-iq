@@ -37,14 +37,19 @@ export function ChoiceQuestion({
   return (
     <div className="question">
       <h2 className="question-prompt" tabIndex={-1}>
-        {visual || (item.kind === 'text' && item.sequence)
+        {visual ||
+        section === 'verbal' ||
+        section === 'series' ||
+        (item.kind === 'text' && item.sequence)
           ? item.prompt
           : section === 'words'
             ? 'Which word is closest in meaning?'
             : 'Complete the relationship.'}
       </h2>
       <ItemStimulus item={item} />
-      <fieldset className={`options ${visual ? 'visual-options' : 'text-options'}`}>
+      <fieldset
+        className={`options ${visual ? 'visual-options' : 'text-options'} ${item.kind === 'icar-cube' ? 'cube-options' : ''} ${item.kind.startsWith('icar-') ? 'icar-options' : ''}`}
+      >
         <legend className="sr-only">Choose your answer</legend>
         {item.options.map((option, i) => (
           <label className={`option ${selected === i ? 'selected' : ''}`} key={i}>
@@ -58,7 +63,11 @@ export function ChoiceQuestion({
                 setChecked(false);
                 setSkip(false);
               }}
-              aria-label={visual ? `Option ${option}` : option}
+              aria-label={
+                visual
+                  ? `Option ${String.fromCharCode(65 + i)}${option.length > 1 ? `: ${option}` : ''}`
+                  : option
+              }
             />
             <span className="option-letter" aria-hidden="true">
               {String.fromCharCode(65 + i)}

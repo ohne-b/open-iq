@@ -1,5 +1,10 @@
 import { describe, expect, test } from 'vitest';
-import { createSession, sections, type Session } from './domain';
+import {
+  createSession as createCurrentSession,
+  LEGACY_FORM_VERSION,
+  sections,
+  type Session,
+} from './domain';
 import { choiceBank, practiceBank, sequenceTrial, spanTrial, speedTrial } from './content';
 import {
   glyphKey,
@@ -12,6 +17,9 @@ import {
 import { interruptSession, parseSession, recordResponse } from './session';
 import { scoreSession } from './scoring';
 import { registerReportTool, type ReportContext } from './report-tool';
+
+const createSession = (mode: Session['inputMode']) =>
+  createCurrentSession(mode, false, LEGACY_FORM_VERSION);
 
 describe('fixed assessment form', () => {
   test('contains every promised item, distinct practice, and six unique visual options', () => {

@@ -2,8 +2,8 @@ import { useEffect, useRef, useState } from 'react';
 import { Icon } from '@mdi/react';
 import { mdiCheck } from '@mdi/js';
 import { Link, useNavigate } from 'react-router-dom';
-import { sections, flagSession, type Response, type Session } from '../domain';
-import { choiceBank, practiceBank, sequenceTrial, spanTrial } from '../content';
+import { FORM_VERSION, sectionsFor, flagSession, type Response, type Session } from '../domain';
+import { choiceBankFor, practiceBank, sequenceTrial, spanTrial } from '../content';
 import { interruptSession, recordBlock, recordResponse, sectionProgress } from '../session';
 import { ChoiceQuestion } from './ChoiceQuestion';
 import { MemoryTask } from './MemoryTask';
@@ -139,6 +139,9 @@ export function Assessment({
     return close;
   }, [session.id, onOpen]);
 
+  const sections = sectionsFor(session.version);
+  const choiceBank = choiceBankFor(session.version);
+  const lastSection = sections.length - 1;
   const section = sections[session.sectionIndex];
   const progress = sectionProgress(session);
   useEffect(() => {
@@ -183,23 +186,29 @@ export function Assessment({
     await update(session.id, (s) => ({
       ...s,
       sectionIndex: s.sectionIndex + 1,
-      stage: s.sectionIndex === 9 ? 'complete' : 'intro',
+      stage: s.sectionIndex === lastSection ? 'complete' : 'intro',
     }));
-    if (session.sectionIndex === 9) navigate(`/results/${session.id}`);
+    if (session.sectionIndex === lastSection) navigate(`/results/${session.id}`);
   };
   return (
     <main className="assessment">
       <div className="assessment-meta">
-        <span>Section {session.sectionIndex + 1} of 10</span>
+        <span>
+          Section {session.sectionIndex + 1} of {sections.length}
+        </span>
         <button className="quiet-button" onClick={onLeave}>
           Save & leave
         </button>
       </div>
       <div
         className="progress-track"
-        aria-label={`Assessment progress: section ${session.sectionIndex + 1} of 10`}
+        aria-label={`Assessment progress: section ${session.sectionIndex + 1} of ${sections.length}`}
       >
-        <div style={{ width: `${(session.sectionIndex + progress / section.count) * 10}%` }} />
+        <div
+          style={{
+            width: `${((session.sectionIndex + progress / section.count) * 100) / sections.length}%`,
+          }}
+        />
       </div>
       <div className="section-heading">
         <h1 ref={heading} tabIndex={-1}>
@@ -223,8 +232,11 @@ export function Assessment({
               <li key={instruction}>{instruction}</li>
             ))}
           </ol>
-          <button className="button primary" onClick={() => void stage('practice')}>
-            Try a practice
+          <button
+            className="button primary"
+            onClick={() => void stage(session.version === FORM_VERSION ? 'running' : 'practice')}
+          >
+            {session.version === FORM_VERSION ? 'Begin section' : 'Try a practice'}
           </button>
         </div>
       )}
@@ -335,18 +347,20 @@ export function Assessment({
             <Icon path={mdiCheck} size={1.4} aria-hidden="true" />
           </span>
           <h2>
-            {session.sectionIndex === 9 ? 'You’ve finished the assessment.' : 'Section complete.'}
+            {session.sectionIndex === lastSection
+              ? 'You’ve finished the assessment.'
+              : 'Section complete.'}
           </h2>
           <p>
-            {session.sectionIndex === 9
+            {session.sectionIndex === lastSection
               ? 'Your results are ready.'
               : `Take a moment. Next is ${sections[session.sectionIndex + 1].name.toLowerCase()}.`}
           </p>
-          {session.sectionIndex === 9 && (
+          {session.sectionIndex === lastSection && (
             <p className="small muted">You can save or print your report on the next screen.</p>
           )}
           <button className="button primary" onClick={nextSection}>
-            {session.sectionIndex === 9 ? 'View results' : 'Continue'}
+            {session.sectionIndex === lastSection ? 'View results' : 'Continue'}
           </button>
           <button className="quiet-button block-link" onClick={onLeave}>
             Save & finish later

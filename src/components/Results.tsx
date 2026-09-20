@@ -2,11 +2,12 @@ import { useEffect } from 'react';
 import { Icon } from '@mdi/react';
 import { mdiPlus, mdiChevronDown } from '@mdi/js';
 import { Link } from 'react-router-dom';
-import { sections, type Session } from '../domain';
+import { FORM_VERSION, sections, type Session } from '../domain';
 import { itemById } from '../content';
 import { scoreSession } from '../scoring';
 import { downloadSession } from '../storage';
 import { registerReportTool, type ReportContext } from '../report-tool';
+import { IcarResults } from './IcarResults';
 
 export function Results({ session, onDelete }: { session: Session; onDelete: () => void }) {
   useEffect(
@@ -17,6 +18,8 @@ export function Results({ session, onDelete }: { session: Session; onDelete: () 
       ),
     [session],
   );
+  if (session.version === FORM_VERSION)
+    return <IcarResults session={session} onDelete={onDelete} />;
   const scores = scoreSession(session);
   const completed = scores.filter((s) => s.completed).length;
   const date = new Date(session.startedAt).toLocaleDateString(undefined, {

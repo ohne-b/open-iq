@@ -1,7 +1,7 @@
 {
   "name": "open-iq",
   "private": true,
-  "version": "1.0.0",
+  "version": "2.0.0",
   "type": "module",
   "license": "Apache-2.0",
   "engines": {
@@ -11,13 +11,14 @@
     "dev": "vite --host 127.0.0.1",
     "build": "tsc -b && vite build",
     "preview": "vite preview --host 127.0.0.1",
+    "reference:check": "node scripts/build-icar-reference.mjs --check",
     "typecheck": "tsc -b",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "playwright test",
     "lint": "eslint .",
-    "format": "prettier --write src tests *.json *.ts *.js *.html .github",
-    "format:check": "prettier --check src tests *.json *.ts *.js *.html .github"
+    "format": "prettier --write src tests scripts *.json *.ts *.js *.html .github",
+    "format:check": "prettier --check src tests scripts *.json *.ts *.js *.html .github"
   },
   "dependencies": {
     "@fontsource-variable/dm-sans": "^5.3.0",

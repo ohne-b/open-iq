@@ -1,6 +1,7 @@
 import { z } from 'zod';
-import type { Session } from './domain';
+import { FORM_VERSION, type Session } from './domain';
 import { scoreSession } from './scoring';
+import { scoreIcar } from './icar-scoring';
 
 type ReportTool = {
   name: string;
@@ -23,7 +24,7 @@ export function registerReportTool(session: Session, context?: ReportContext) {
           {
             name: 'get_open_iq_results',
             description:
-              'Read the task scores in the currently displayed Open IQ report. These are unvalidated raw task scores, not IQ scores or population percentiles.',
+              'Read the currently displayed Open IQ report. ICAR-form estimates use a documented adult volunteer cohort, not age-adjusted population IQ norms. Legacy forms report raw task scores only.',
             inputSchema: { type: 'object', properties: {}, additionalProperties: false },
             annotations: { readOnlyHint: true, untrustedContentHint: false },
             execute(input) {
@@ -33,6 +34,13 @@ export function registerReportTool(session: Session, context?: ReportContext) {
                 completed: session.stage === 'complete',
                 inputMode: session.inputMode,
                 flags: session.flags,
+                ...(session.version === FORM_VERSION
+                  ? {
+                      reference: scoreIcar(session),
+                      interpretation:
+                        'Study-reference standard scores (mean 100, SD 15), not population IQ. Modernized presentation has not been independently validated.',
+                    }
+                  : {}),
                 scores: scoreSession(session).map((s) => ({
                   task: s.section.name,
                   completed: s.completed,

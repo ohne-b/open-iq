@@ -1,17 +1,24 @@
 import { test, expect, type Page } from '@playwright/test';
-import { createSession, sections, type Session } from '../src/domain';
+import {
+  createSession,
+  LEGACY_FORM_VERSION,
+  icarSections,
+  sections,
+  type Session,
+} from '../src/domain';
 import { choiceBank, sequenceTrial, spanTrial } from '../src/content';
+import { icarBank } from '../src/content/icar';
 
 async function start(page: Page) {
   await page.goto('./');
   await page.getByRole('link', { name: 'Start test' }).click();
   await page.getByLabel('I’m 18 or older').check();
   await page.getByRole('button', { name: 'Begin assessment' }).click();
-  await expect(page.getByRole('heading', { name: 'Matrix reasoning', exact: true })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Verbal reasoning', exact: true })).toBeVisible();
 }
 
 function atSection(index: number): Session {
-  const session = createSession('keyboard');
+  const session = createSession('keyboard', false, LEGACY_FORM_VERSION);
   session.sectionIndex = index;
   session.stage = 'running';
   for (const section of sections.slice(0, index)) {
@@ -91,10 +98,13 @@ test('home is centered, uses the supplied logo and has one About link', async ({
   await page.screenshot({ path: testInfo.outputPath('home.png'), fullPage: true });
 });
 
-test('practice, answer, leave and reload preserve progress', async ({ page }) => {
+test('legacy practice, answer, leave and reload preserve progress', async ({ page }) => {
   const errors: string[] = [];
   page.on('pageerror', (error) => errors.push(error.message));
-  await start(page);
+  const session = atSection(0);
+  session.stage = 'intro';
+  await seedSession(page, session);
+  await page.getByRole('link', { name: 'Continue test', exact: true }).click();
   await expect(page.locator('.section-intro')).not.toContainText('Practice comes first.');
   await page.getByRole('button', { name: 'Try a practice' }).click();
   await page.getByRole('radio', { name: 'Option C', exact: true }).check();
@@ -114,9 +124,9 @@ test('practice, answer, leave and reload preserve progress', async ({ page }) =>
   await page.getByRole('button', { name: 'Next', exact: true }).click();
   await expect(page.getByText('2 / 18', { exact: true })).toBeVisible();
   await page.getByRole('button', { name: 'Save & leave', exact: true }).click();
-  await expect(page.getByRole('link', { name: 'Continue test', exact: true })).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Continue', exact: true })).toBeVisible();
   await page.reload();
-  await page.getByRole('link', { name: 'Continue test', exact: true }).click();
+  await page.getByRole('link', { name: 'Continue', exact: true }).click();
   await expect(page.getByText('2 / 18', { exact: true })).toBeVisible();
   expect(errors).toEqual([]);
 });
@@ -160,6 +170,67 @@ test('the same assessment cannot be taken in two tabs', async ({ page, context }
   await other.goto(page.url());
   await expect(other.getByRole('heading', { name: 'Already open in another tab' })).toBeVisible();
   await other.close();
+});
+
+test('ICAR completes all four sections, resumes and reports reference scores', async ({
+  page,
+}, testInfo) => {
+  const errors: string[] = [];
+  page.on('pageerror', (error) => errors.push(error.message));
+  await start(page);
+  for (const [sectionIndex, section] of icarSections.entries()) {
+    await page.getByRole('button', { name: 'Begin section', exact: true }).click();
+    for (const [index, item] of icarBank[section.id]!.entries()) {
+      await expect(page.getByText(`${index + 1} / 4`, { exact: true })).toBeVisible();
+      if (sectionIndex === 0 && index === 1) {
+        await page.getByRole('button', { name: 'Save & leave', exact: true }).click();
+        await expect(page.getByRole('link', { name: 'Continue test', exact: true })).toBeVisible();
+        await page.reload();
+        await page.getByRole('link', { name: 'Continue test', exact: true }).click();
+        await expect(page.getByText('2 / 4', { exact: true })).toBeVisible();
+      }
+      if (item.kind.startsWith('icar-')) {
+        await expect(page.getByRole('radio')).toHaveCount(item.options.length);
+        expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(
+          page.viewportSize()!.width,
+        );
+        if (item.id === 'MR.47') {
+          await expect(page.locator('.icar-matrix > :nth-child(6)')).toHaveAttribute(
+            'aria-label',
+            'Missing piece',
+          );
+        }
+        await page.screenshot({ path: testInfo.outputPath(`${item.id}.png`), fullPage: true });
+      }
+      await page.getByRole('radio').nth(item.answer).check();
+      await expect(page.locator('.option.selected')).toHaveCSS('outline-style', 'none');
+      await page.getByRole('button', { name: 'Next', exact: true }).click();
+    }
+    if (sectionIndex === 0) {
+      await expect(
+        page.getByRole('heading', { name: 'Section complete.', exact: true }),
+      ).toBeVisible();
+      await page.goto(page.url().replace('/test/', '/results/'));
+      await expect(page.locator('.overall-score')).toHaveCount(0);
+      await expect(page.locator('.score-value strong')).toHaveText(['115']);
+      await page.getByRole('link', { name: 'Continue test', exact: true }).click();
+    }
+    await page
+      .getByRole('button', { name: sectionIndex === 3 ? 'View results' : 'Continue', exact: true })
+      .click();
+  }
+  await expect(page.getByRole('heading', { name: 'Your results' })).toBeVisible();
+  await expect(page.locator('.overall-score strong')).toHaveText('131');
+  await expect(page.locator('.score-value strong')).toHaveText(['115', '117', '122', '136']);
+  await expect(page.getByText('4 of 4 sections completed', { exact: false })).toBeVisible();
+  await expect(page.getByText(/not age-adjusted population IQ scores/)).toBeVisible();
+  await page.reload();
+  await expect(page.locator('.overall-score strong')).toHaveText('131');
+  await page.screenshot({ path: testInfo.outputPath('results.png'), fullPage: true });
+  await page.emulateMedia({ media: 'print' });
+  await expect(page.getByRole('button', { name: 'Print or save PDF' })).toBeHidden();
+  await page.screenshot({ path: testInfo.outputPath('report.png'), fullPage: true });
+  expect(errors).toEqual([]);
 });
 
 test('the last speed section finishes both rounds and opens the complete report', async ({

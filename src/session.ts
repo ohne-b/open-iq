@@ -1,14 +1,18 @@
 import {
-  sections,
+  FORM_VERSION,
+  sectionsFor,
   sessionSchema,
   flagSession,
   type Response,
   type Session,
   type SpeedBlock,
 } from './domain';
-import { choiceBank, sequenceTrial, spanTrial, speedDuration } from './content';
+import { choiceBankFor, sequenceTrial, spanTrial, speedDuration } from './content';
 
-export function sectionProgress(session: Session, section = sections[session.sectionIndex]) {
+export function sectionProgress(
+  session: Session,
+  section = sectionsFor(session.version)[session.sectionIndex],
+) {
   if (!section) return 0;
   return section.kind === 'speed'
     ? session.speedBlocks.filter((b) => b.section === section.id).length
@@ -20,7 +24,10 @@ export function recordResponse(session: Session, response: Response): Session {
   const next = { ...session, responses: [...session.responses, response], activeTrial: null };
   return {
     ...next,
-    stage: sectionProgress(next) >= sections[next.sectionIndex].count ? 'break' : 'running',
+    stage:
+      sectionProgress(next) >= sectionsFor(next.version)[next.sectionIndex].count
+        ? 'break'
+        : 'running',
   };
 }
 
@@ -33,7 +40,7 @@ export function recordBlock(session: Session, block: SpeedBlock): Session {
 
 export function interruptSession(session: Session): Session {
   if (!session.activeTrial) return session;
-  const section = sections[session.sectionIndex];
+  const section = sectionsFor(session.version)[session.sectionIndex];
   if (!section) return { ...session, activeTrial: null };
   const index = sectionProgress(session);
   const flagged = flagSession(session, 'interrupted');
@@ -54,9 +61,19 @@ export function interruptSession(session: Session): Session {
       });
 }
 
-// Imported scores are never trusted. Validate the response record, then recompute.
+// Stored scores are never trusted. Validate the response record, then recompute.
 export function parseSession(value: unknown): Session {
   const session = sessionSchema.parse(value);
+  const sections = sectionsFor(session.version);
+  const choiceBank = choiceBankFor(session.version);
+  if (session.sectionIndex > sections.length) throw new Error('Invalid section index');
+  if (
+    session.version === FORM_VERSION &&
+    (session.speedBlocks.length ||
+      session.activeTrial ||
+      ['practice', 'ready'].includes(session.stage))
+  )
+    throw new Error('Unexpected ICAR task state');
   const ids = new Set<string>();
   for (const r of session.responses) {
     const section = sections.find((s) => s.id === r.section);
@@ -124,9 +141,12 @@ export function parseSession(value: unknown): Session {
       throw new Error('Missing earlier section');
     if (i > session.sectionIndex && progress) throw new Error('Unexpected later section');
   }
-  if (session.stage === 'complete' && session.sectionIndex !== 10)
+  if (session.stage === 'complete' && session.sectionIndex !== sections.length)
     throw new Error('Invalid completion state');
-  if (session.sectionIndex === 10 && (session.stage !== 'complete' || session.activeTrial))
+  if (
+    session.sectionIndex === sections.length &&
+    (session.stage !== 'complete' || session.activeTrial)
+  )
     throw new Error('Invalid completion state');
   const section = sections[session.sectionIndex];
   if (section) {

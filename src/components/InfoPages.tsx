@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { Icon } from '@mdi/react';
 import { mdiArrowLeft, mdiChevronDown, mdiOpenInNew } from '@mdi/js';
-import { sections } from '../domain';
+import { icarSections } from '../domain';
 
 export function About() {
   return (
@@ -12,122 +12,113 @@ export function About() {
       </Link>
       <h1>About the test</h1>
       <p className="intro">
-        One assessment, ten sections. An open look at reasoning, language, memory and visual speed.
-      </p>
-      <h2>What the results mean</h2>
-      <p>
-        You receive a record of your performance on the tasks you take: correct answers, recalled
-        positions, and correct responses and mistakes in timed rounds.
-      </p>
-      <p>
-        Open IQ does not currently produce an IQ score, percentile or diagnostic interpretation.
-        There is no representative reference sample, established reliability estimate or published
-        validation for this form. Converting a raw score to a mean of 100 would not make it a valid
-        IQ scale.
-      </p>
-      <h2>What’s in the assessment</h2>
-      <p>
-        Allow roughly 60–75 minutes, with breaks between sections. This is an estimate, not a time
-        limit. Only the two visual speed sections are timed; memory sequences also have fixed
-        presentation times.
+        16 questions from the International Cognitive Ability Resource, in four sections.
       </p>
       <ol className="section-directory">
-        {sections.map((section) => (
+        {icarSections.map((section) => (
           <li key={section.id}>
             <span>{section.name}</span>
-            <span className="muted small">
-              {section.kind === 'speed'
-                ? '2 timed rounds'
-                : `${section.count} ${section.kind === 'choice' ? 'questions' : 'sequences'}`}
-            </span>
+            <span className="muted small">4 questions</span>
           </li>
         ))}
       </ol>
-      <h2>Who it’s for</h2>
+      <h2>What your score means</h2>
       <p>
-        Adults aged 18 or older who understand the English instructions. People around the world can
-        participate, but that does not establish fair or equivalent measurement across countries,
-        languages or educational backgrounds. The language sections depend particularly on English
-        experience.
+        Your overall and section estimates use a scale centered on 100, with a standard deviation of
+        15, in a published research sample. They describe performance relative to that sample. They
+        are not age-adjusted population IQ scores, a diagnosis, or a full assessment of
+        intelligence.
       </p>
       <p>
-        Use a quiet place and work without notes, calculators, search engines or help from others. A
-        keyboard and a larger screen are preferable for the visual tasks. Touch input is available;
-        scores from different input methods are not assumed to be equivalent.
+        The reference contains 3,480 volunteers in age bands 19 and older who answered all 16
+        questions in the SAPA study. It is an online volunteer sample, not a representative sample
+        of international English-speaking adults. English experience, education, age and prior
+        exposure can affect the comparison.
       </p>
-      <h2>How scores are calculated</h2>
       <details>
         <summary>
-          Reasoning, language and spatial questions
+          How scoring works
           <Icon path={mdiChevronDown} className="ui-icon disclosure-icon" aria-hidden="true" />
         </summary>
         <p>
-          One point for each correct answer. Skipped questions are listed separately. There is no
-          penalty for an incorrect choice, no time bonus, and no combined score across sections.
+          Each correct answer earns one point. Wrong and skipped answers earn zero. For each
+          section, and for the total, we subtract the reference mean from your raw score, divide by
+          the reference standard deviation, multiply by 15, and add 100. Results are rounded to
+          whole numbers.
+        </p>
+        <p>
+          The overall result uses all 16 answers and the observed distribution of total scores. It
+          is not an average of the section estimates. Study percentiles count the proportion below
+          your raw score plus half of those tied with it; they do not assume a normal distribution.
+        </p>
+        <p>
+          This conversion was calculated by Open IQ from the published response data. It is not an
+          IQ conversion supplied by the ICAR authors. Four questions give each section only five
+          raw-score levels, so one answer can move its estimate substantially. Even a perfect total
+          reaches only about 131 on this reference scale; the test cannot distinguish scores above
+          its ceiling.
         </p>
       </details>
       <details>
         <summary>
-          Memory
+          Questions, graphics and evidence
           <Icon path={mdiChevronDown} className="ui-icon disclosure-icon" aria-hidden="true" />
         </summary>
         <p>
-          Each digit or location in the correct position counts as one point. Exact sequences are
-          also counted. Symmetry decisions in spatial memory are reported separately. Interrupted
-          sequences are missing observations, not evidence of low ability.
+          The items come from the public-domain ICAR Sample Test published by David M. Condon and
+          William Revelle in 2014. Question wording, answer order and keys are preserved. Diagrams
+          have been redrawn as SVGs, preserving their shapes, fills and answer-relevant
+          orientations.
+        </p>
+        <p>
+          The original ICAR research supports studying cognitive ability with these items. This
+          site's redrawn, responsive presentation and section estimates have not been independently
+          validated. Published evidence for the original instrument does not establish equivalent
+          difficulty, reliability or fairness for this adaptation.
+        </p>
+        <p>
+          Sources: <a href="https://www.icar-project.org/">ICAR</a>,{' '}
+          <a href="https://personality-project.org/revelle/publications/condon.icar.14.pdf">
+            the research paper
+          </a>
+          ,{' '}
+          <a href="https://ars.els-cdn.com/content/image/1-s2.0-S0160289614000051-mmc1.pdf">
+            the published sample test
+          </a>
+          , and <a href="https://doi.org/10.7910/DVN/AD9RVY">the human-response dataset</a>. The{' '}
+          <a href="https://github.com/ohne-b/open-iq/blob/main/docs/ICAR.md">
+            scoring notes and reproducible reference calculation
+          </a>{' '}
+          document the exact subset and formula.
         </p>
       </details>
+      <h2>Taking the test</h2>
+      <p>
+        The site is for adults aged 18 or older who understand English. The reference excludes the
+        source dataset's combined “18 and under” group because adult 18-year-olds cannot be
+        separated from minors.
+      </p>
+      <p>
+        Work on your own, without notes, a calculator or outside help. There is no time limit. A
+        larger screen helps with the visual questions. Choose an answer and continue; submitted
+        answers cannot be changed. Progress stays in this browser.
+      </p>
+      <p>
+        This is a fixed test with public questions and answer keys. Repeating it or studying its
+        solutions can raise scores. Results should not be used for diagnosis, employment, admissions
+        or other high-stakes decisions.
+      </p>
       <details>
         <summary>
-          Visual speed
+          Earlier saved assessments
           <Icon path={mdiChevronDown} className="ui-icon disclosure-icon" aria-hidden="true" />
         </summary>
         <p>
-          Correct and incorrect responses are counted in each completed round. Symbol comparison has
-          two 90-second rounds; visual search has two 60-second rounds. Responses after the deadline
-          are excluded. An interrupted round is excluded entirely from speed totals.
+          Attempts from the original ten-section Open IQ form keep their original questions and raw
+          task results. They can still be resumed and exported. The ICAR reference does not apply to
+          those questions, so those attempts receive no IQ-scale conversion.
         </p>
       </details>
-      <details>
-        <summary>
-          Interruptions and repeat attempts
-          <Icon path={mdiChevronDown} className="ui-icon disclosure-icon" aria-hidden="true" />
-        </summary>
-        <p>
-          Leaving this tab or a substantial timing delay ends an active memory sequence or speed
-          round. A reload cannot replay that task. Untimed questions can be resumed. Breaks are
-          allowed between tasks, and progress stays in this browser.
-        </p>
-        <p>
-          This release uses a fixed form. Practice effects, public answer keys and repeat exposure
-          limit what repeat scores can tell you. It is unsuitable for selection, credentials,
-          employment or other high-stakes decisions.
-        </p>
-      </details>
-      <h2>Independent, open and still unvalidated</h2>
-      <p>
-        The questions are original contributions to this project. This is not WAIS, a replacement
-        for a professionally administered assessment, or an adaptation licensed by a commercial test
-        publisher. No commercial test items or norm tables are included.
-      </p>
-      <p>
-        Software checks verify scoring and item structure. They cannot establish psychometric
-        quality. Item wording, difficulty, ambiguity and performance across groups still require
-        empirical study and independent review.
-      </p>
-      <p>
-        The project’s{' '}
-        <a href="https://github.com/ohne-b/open-iq/tree/main/docs">
-          research and methodology documents
-        </a>{' '}
-        set out those requirements and the sources behind the design. Relevant starting points
-        include the{' '}
-        <a href="https://www.testingstandards.net/open-access-files.html">
-          Standards for Educational and Psychological Testing
-        </a>{' '}
-        and the{' '}
-        <a href="https://www.intestcom.org/page/16">International Test Commission guidelines</a>.
-      </p>
       <div className="page-bottom">
         <Link to="/">Back to assessment</Link>
         <a href="https://github.com/ohne-b/open-iq">
@@ -200,13 +191,13 @@ export function Accessibility() {
       <p className="intro">Clear controls, keyboard navigation, and room to take your time.</p>
       <p>
         Use Tab to move between controls and the arrow keys to select an answer within a choice
-        group. All actions have visible focus states. In speed tasks, F selects the left answer and
-        J selects the right. The same answers are available as buttons.
+        group. All actions have visible focus states. Answers are also available through on-screen
+        controls.
       </p>
       <p>
-        Most questions have no time limit. You can leave an untimed question and return later.
-        Memory presentations and speed rounds cannot be paused without invalidating that task; take
-        breaks before starting them.
+        The current test has no time limit. You can save, leave and return later. In earlier saved
+        assessments, memory presentations and speed rounds still cannot be paused without
+        interrupting that task.
       </p>
       <p>
         The site respects reduced-motion preferences and supports browser zoom. It uses shape, text

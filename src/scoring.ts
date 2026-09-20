@@ -1,8 +1,8 @@
-import { sections, type Session } from './domain';
+import { sectionsFor, type Session } from './domain';
 import { itemById, sequenceTrial, spanTrial, speedTrial } from './content';
 
 export function scoreSession(session: Session) {
-  return sections.map((section) => {
+  return sectionsFor(session.version).map((section) => {
     const responses = session.responses.filter((r) => r.section === section.id);
     const blocks = session.speedBlocks.filter((b) => b.section === section.id);
     const attempted = responses.filter((r) => r.status === 'answered').length;

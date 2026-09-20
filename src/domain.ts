@@ -1,8 +1,11 @@
 import { z } from 'zod';
 
-export const FORM_VERSION = 'open-iq-1.0';
-export const APP_VERSION = '1.0.0';
+export const LEGACY_FORM_VERSION = 'open-iq-1.0';
+export const FORM_VERSION = 'icar16-1.0';
+export const APP_VERSION = '2.0.0';
 export type SectionId =
+  | 'verbal'
+  | 'series'
   | 'matrix'
   | 'words'
   | 'sequence'
@@ -32,6 +35,7 @@ export type ChoiceItem = {
   explanation: string;
 } & (
   | { kind: 'text'; sequence?: number[] }
+  | { kind: 'icar-matrix' | 'icar-cube' }
   | { kind: 'matrix'; cells: Glyph[]; choices: Glyph[] }
   | { kind: 'rotation'; object: Point3[]; choices: Point3[][] }
   | { kind: 'folding'; folds: ('left' | 'up')[]; holes: Point2[]; choices: Point2[][] }
@@ -51,6 +55,8 @@ export type Section = {
 export const responseSchema = z.object({
   itemId: z.string().max(80),
   section: z.enum([
+    'verbal',
+    'series',
     'matrix',
     'words',
     'sequence',
@@ -91,7 +97,7 @@ const speedBlockSchema = z.object({
 export type SpeedBlock = z.infer<typeof speedBlockSchema>;
 
 export const sessionSchema = z.object({
-  version: z.literal(FORM_VERSION),
+  version: z.enum([LEGACY_FORM_VERSION, FORM_VERSION]),
   id: z.string().uuid(),
   startedAt: z.string().datetime(),
   updatedAt: z.string().datetime(),
@@ -105,10 +111,14 @@ export const sessionSchema = z.object({
 });
 export type Session = z.infer<typeof sessionSchema>;
 
-export function createSession(inputMode: Session['inputMode'], retest = false): Session {
+export function createSession(
+  inputMode: Session['inputMode'],
+  retest = false,
+  version: Session['version'] = FORM_VERSION,
+): Session {
   const now = new Date().toISOString();
   return {
-    version: FORM_VERSION,
+    version,
     id: crypto.randomUUID(),
     startedAt: now,
     updatedAt: now,
@@ -264,6 +274,62 @@ export const sections: Section[] = [
     ],
   },
 ];
+
+export const icarSections: Section[] = [
+  {
+    id: 'verbal',
+    name: 'Verbal reasoning',
+    area: 'Language',
+    count: 4,
+    minutes: '',
+    kind: 'choice',
+    description: 'Solve short reasoning problems.',
+    instructions: [
+      'Choose the best answer to each question.',
+      'Work without notes, a calculator or outside help. There is no time limit.',
+    ],
+  },
+  {
+    id: 'series',
+    name: 'Letter series',
+    area: 'Reasoning',
+    count: 4,
+    minutes: '',
+    kind: 'choice',
+    description: 'Find the next letter in a sequence.',
+    instructions: ['Choose the letter that continues the pattern.', 'Use the English alphabet.'],
+  },
+  {
+    id: 'matrix',
+    name: 'Matrix reasoning',
+    area: 'Reasoning',
+    count: 4,
+    minutes: '',
+    kind: 'choice',
+    description: 'Complete the figure.',
+    instructions: [
+      'Choose the option that belongs in the missing cell.',
+      'Consider the shapes, fills, positions and orientations.',
+    ],
+  },
+  {
+    id: 'rotation',
+    name: 'Three-dimensional rotation',
+    area: 'Spatial thinking',
+    count: 4,
+    minutes: '',
+    kind: 'choice',
+    description: 'Recognize a cube from another angle.',
+    instructions: [
+      'Each face of the cube has a different image.',
+      'Choose the cube that could be a rotation of X. The markings turn with the cube.',
+      '“None of the cubes” is an answer option. Choose “I do not know” if you cannot solve it.',
+    ],
+  },
+];
+
+export const sectionsFor = (version: Session['version']) =>
+  version === FORM_VERSION ? icarSections : sections;
 
 export function flagSession(session: Session, flag: Session['flags'][number]): Session {
   return { ...session, flags: [...new Set([...session.flags, flag])] };

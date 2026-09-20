@@ -2,7 +2,7 @@ import { Component, useCallback, useEffect, useRef, useState, type ReactNode } f
 import { Link, Route, Routes, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { Icon } from '@mdi/react';
 import { mdiArrowLeft, mdiArrowRight, mdiGithub } from '@mdi/js';
-import { createSession, flagSession, type Session } from './domain';
+import { FORM_VERSION, createSession, flagSession, sectionsFor, type Session } from './domain';
 import { interruptSession } from './session';
 import { deleteSession, downloadSession, loadSessions, saveSession } from './storage';
 import { Assessment, type UpdateSession } from './components/Assessment';
@@ -17,7 +17,7 @@ const brand = (
 );
 
 function Home({ sessions }: { sessions: Session[] }) {
-  const pending = sessions.find((s) => s.stage !== 'complete');
+  const pending = sessions.find((s) => s.version === FORM_VERSION && s.stage !== 'complete');
   return (
     <main className="home-main" id="main-content" tabIndex={-1}>
       <h1 tabIndex={-1}>Cognitive assessment</h1>
@@ -49,7 +49,8 @@ function Home({ sessions }: { sessions: Session[] }) {
                   <span className="small muted">
                     {session.stage === 'complete'
                       ? 'Complete'
-                      : `Section ${session.sectionIndex + 1} of 10`}
+                      : `Section ${session.sectionIndex + 1} of ${sectionsFor(session.version).length}`}
+                    {session.version !== FORM_VERSION ? ' · Original form' : ''}
                   </span>
                 </div>
                 <Link
@@ -93,11 +94,8 @@ function Prepare({
       <p className="intro">Find a quiet place and give yourself some time.</p>
       <ul className="prepare-list">
         <li>Work on your own, without notes, a calculator, or outside help.</li>
-        <li>
-          You can take breaks between tasks. Keep this tab open during memory sequences and timed
-          rounds.
-        </li>
-        <li>Practice comes before every section. There’s no time limit on most questions.</li>
+        <li>The test is untimed. You can take breaks between sections.</li>
+        <li>Choose one answer per question. Skipped answers receive zero points.</li>
       </ul>
       <form
         onSubmit={async (event) => {
@@ -130,10 +128,7 @@ function Prepare({
           </label>
         </fieldset>
         {mode === 'touch' && (
-          <p className="small muted">
-            A larger screen is easier for visual tasks. Touch and keyboard speed scores are not
-            interchangeable.
-          </p>
+          <p className="small muted">A larger screen is easier for the visual tasks.</p>
         )}
         <label className="checkbox-row">
           <input
@@ -141,7 +136,7 @@ function Prepare({
             checked={retest}
             onChange={(event) => setRetest(event.target.checked)}
           />
-          <span>I’ve taken this assessment before.</span>
+          <span>I’ve taken ICAR-16 or seen its questions before.</span>
         </label>
         <label className="checkbox-row adult-confirm">
           <input
@@ -153,8 +148,8 @@ function Prepare({
           <span>I’m 18 or older and understand the English instructions.</span>
         </label>
         <p className="small muted">
-          Your report shows task scores, not an IQ score. Answers are saved in this browser.{' '}
-          <Link to="/privacy">Privacy</Link>
+          Results are estimates relative to a research sample, not a clinical IQ assessment. Answers
+          stay in this browser. <Link to="/privacy">Privacy</Link>
         </p>
         <button className="button primary" type="submit" disabled={!accepted || starting}>
           {starting ? 'Starting…' : 'Begin assessment'}
@@ -404,7 +399,12 @@ export function App() {
           <Route path="/" element={<Home sessions={sessions} />} />
           <Route
             path="/prepare"
-            element={<Prepare hasPrevious={sessions.length > 0} onBegin={begin} />}
+            element={
+              <Prepare
+                hasPrevious={sessions.some((s) => s.version === FORM_VERSION)}
+                onBegin={begin}
+              />
+            }
           />
           <Route
             path="/test/:id"
